@@ -1,0 +1,30 @@
+
+@import url("https://use.typekit.net/fdf5yot.css");
+
+
+
+:root {
+  --lightgreen: #8AD0CE;
+  --dark: #4B585E;
+  margin: 0;
+  padding: 0;
+  /* background: var(--dark); */
+  background: rgb(231,214,210);
+  background: linear-gradient(11deg, rgba(231,214,210,1) 0%, rgba(186,196,200,1) 100%);
+}
+
+body, html {
+  /* background: var(--dark); */
+  background: linear-gradient(11deg, rgba(231,214,210,1) 0%, rgba(186,196,200,1) 100%);
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+
+
