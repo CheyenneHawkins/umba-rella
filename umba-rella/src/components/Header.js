@@ -19,11 +19,12 @@ export default function Header() {
 
     return (
         <ButtonGroup>
-            <button type="button" onClick={()=>{navigate("/signup")}}>SIGN UP PAGE</button>
+            {/* <button type="button" onClick={()=>{navigate("/signup")}}>SIGN UP PAGE</button> */}
             <button type="button" onClick={()=>{navigate("/signupphone")}}>SIGN UP PHONE PAGE</button>
-            <button type="button" onClick={()=>{navigate("/signin")}}>SIGN IN PAGE</button>
+            {/* <button type="button" onClick={()=>{navigate("/signin")}}>SIGN IN PAGE</button> */}
             <button type="button" onClick={()=>{navigate("/account")}}>ACCOUNT</button>
             <button type="button" onClick={()=>{navigate("/special")}}>SPECIAL</button>
+            <button type="button" onClick={()=>{navigate("/weather")}}>WEATHER</button>
         </ButtonGroup>
 
 

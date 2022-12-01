@@ -1,5 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, RecaptchaVerifier } from "firebase/auth";
+import 'firebase/firestore';
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+
 
 
 // Your web app's Firebase configuration
@@ -28,3 +31,16 @@ const firebaseConfig = {
   export const auth = getAuth(app)
 
   export default app
+  export const firestore = getFirestore(app);
+
+  
+  export function writeUserDbEntry(userID, docData) {
+    const userSpot = doc(firestore, `users/${userID}`)
+    setDoc(userSpot, docData);
+  }
+
+  export function modUserDbEntry(userID, docData) {
+    const userSpot = doc(firestore, `users/${userID}`)
+    setDoc(userSpot, docData, {merge: true});
+  }
+

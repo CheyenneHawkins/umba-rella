@@ -35,14 +35,15 @@ const FormStyles = styled.div`
     border-radius: 15px;
     box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
     & h1 {
-        /* font-style: italic; */
         font-size: 3rem;
         transform: skewY(-5deg);
+    }
+    & h2 {
+        margin-top: -15px;
     }
     & form {
         display: grid;
         justify-content: center;
-        /* text-align: left; */
         font-size: 18px;
         & input {
             color: var(--dark);
@@ -88,6 +89,10 @@ const FormStyles = styled.div`
         & a {
             text-decoration: none;
         }
+    }
+    & button {
+        padding: 5px;
+        margin: 8px;
     }
  `
 

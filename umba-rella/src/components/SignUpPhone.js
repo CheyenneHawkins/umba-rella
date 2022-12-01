@@ -3,10 +3,12 @@ import styled from "styled-components";
 import umbrella from "../images/Umbrella3.png"
 import { UserAuth } from "../contexts/AuthContextNew";
 import { useNavigate } from "react-router-dom";
-import { auth } from "./firebase";
+import { auth, writeUserDbEntry } from "./firebase";
 import { RecaptchaVerifier } from "firebase/auth";
 import { Container, FormStyles, Title } from "./Styles";
 import "../aux.css"
+import wait from "waait";
+
 
 
 export default function SignUpPhone(){
@@ -18,6 +20,7 @@ export default function SignUpPhone(){
     const passwordRef = useRef();
 
     const [phone, setPhone] = useState('');
+    const [phoneFormatted, setPhoneFormatted] = useState('');
     const [password, setPassword] = useState('');
     const [OTP, setOTP] = useState('');
     const [error, setError] = useState('');
@@ -36,45 +39,76 @@ export default function SignUpPhone(){
           }, auth);
     }
 
+    //---------this runs on new sign up or sign in
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         console.log("Submit Clicked");
+
+        //recaptcha process
         generateRecaptcha();
         let appVerifier = window.recaptchaVerifier;
-        let phoneFormatted = `+1 ${phone}`
-        console.log(phoneFormatted);
-        console.log(password);
+
+        //stores the formatted phone number in state
+        //to send to db entry
+        setPhoneFormatted(`+1 ${phone}`);
+
+        //state version of formatted number isn't working for
+        //the authentication, so this stores a temporary version to pass
+        let phoneFormattedTemp = `+1 ${phone}`;
+
+        //ui increment
         setotpField('otpshow')
         setPhoneField('hide')
         setOtpSubmitButton(true)
-        createUserPhone(phoneFormatted, appVerifier).then(confirmationResult => {
+        
+        //Sends info to create user
+        createUserPhone(phoneFormattedTemp, appVerifier).then(confirmationResult => {
             window.confirmationResult = confirmationResult;
         }).catch ((error) => {
                 console.log(error)
             })
         }
 
-    const verifyOTP = (e) => {
+    //---------this runs on entering the one time code
+    const verifyOTP = async (e) => {
+        //grabs the input
         let otp = e.target.value;
         setOTP(otp);
+        //once 6 digits are entered, automatically submits
         if (otp.length ===6){
-            setOtpSubmitButton(false)
-            let confirmationResult = window.confirmationResult;
-            confirmationResult.confirm(otp).then((result) => {
 
+            //checks code for confirm
+            let confirmationResult = window.confirmationResult;
+            confirmationResult.confirm(otp).then(async (result) => {
+
+                //creates user object
                 const user = result.user;
+                //creates user database entry
+                await createUserDbEntry(user.uid);
 
                 }).catch((error) => {
 
                 });
-            console.log(OTP)
+            await wait(1000)
             navigate("/account")
         
         }
     }
 
-    const submitOTP = ()=> {
+    //--------creates data object for user db entry
+    function createUserDbEntry(userID){
+        const dataGroup = {
+          name: '',
+          //grabs the formatted number from state
+          phoneNumber: phoneFormatted,
+          zipcode: '',
+          threshold: '',
+          frequency: '',
+          time: '',
+          userId: userID,
+        }
+        writeUserDbEntry(userID, dataGroup);
     }
 
     return (
@@ -92,10 +126,6 @@ export default function SignUpPhone(){
                         <input type="number" ref={phoneRef} onChange={(e)=> setPhone(e.target.value)}/>
                         <button type="submit" onClick={handleSubmit} disabled={otpSubmitButton}>Send Code</button>
                     </fieldset>
-                    {/* <fieldset>
-                        <label>Password</label>
-                        <input type="password" ref={passwordRef} onChange={(e)=> setPassword(e.target.value)}/>
-                    </fieldset> */}
                     <fieldset className={otpField}>
                         <label>Enter Code</label>
                         <input type="text" value={OTP} onChange={verifyOTP} className="centertext"/>
@@ -111,6 +141,12 @@ export default function SignUpPhone(){
                         setotpField("otpshow")
                         setOtpSubmitButton(false)
                     }}>SHOW ALL FIELDS</button>
+                </div>
+                <div className="" >
+                    <button type="button" onClick={()=> {
+                        // testDB();
+                        console.log("Did it work?");
+                    }}>DB TEST</button>
                 </div>
             </FormStyles>
         </Container>
