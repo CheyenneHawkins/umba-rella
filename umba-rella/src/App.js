@@ -1,12 +1,31 @@
-import logo from './logo.svg';
 import './App.css';
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
+import SignUpPhone from './components/SignUpPhone';
+import { AuthProvider } from './contexts/AuthContext';
+import { AuthContextProvider } from './contexts/AuthContextNew';
+import { Route, Routes } from "react-router-dom";
+import Account from './components/Account';
+import Header from './components/Header';
+import Special from './components/Special';
+
+
 
 function App() {
   return (
     <>
-      <SignIn/>
+      <AuthContextProvider>
+      <Header/>
+        <Routes>
+          <Route path="/" element={<SignIn />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/signupphone" element={<SignUpPhone />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/special" element={<Special />} />
+        </Routes>
+      </AuthContextProvider>
+
     </>
   );
 }
