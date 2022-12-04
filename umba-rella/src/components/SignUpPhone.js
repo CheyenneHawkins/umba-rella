@@ -103,6 +103,7 @@ export default function SignUpPhone(){
           //grabs the formatted number from state
           phoneNumber: phoneFormatted,
           zipcode: '',
+          locationcode: '',
           threshold: '',
           frequency: '',
           time: '',

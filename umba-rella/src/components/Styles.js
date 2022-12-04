@@ -28,7 +28,7 @@ const FormStyles = styled.div`
     height: 650px;
     width: 400px;
     z-index: 2;
-    margin: 100px 0px;
+    margin: 20px 0px;
     padding: 0px;
     background: linear-gradient(11deg, rgba(179,143,219,1) 0%, rgba(138,168,204,1) 100%);   
     border: none;

@@ -3,8 +3,11 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { auth, firestore, modUserDbEntry } from "./firebase";
 import { umbrella } from "./SignIn";
 import { Container, FormStyles, Title } from "./Styles";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { collection, doc, getDoc } from "firebase/firestore";
+import axios from 'axios';
+import wait from "waait";
+
 
 export default function Account(){
 
@@ -13,10 +16,12 @@ export default function Account(){
     const navigate = useNavigate();
 
     const [zipCode, setZipCode] = useState('');
+    const [locationCode, setLocationCode] = useState('');
     const [threshold, setThreshold] = useState('');
     const [frequency, setFrequency] = useState('');
     const [time, setTime] = useState('');
     const [userInfo, setUserInfo] = useState();
+    const [trigger, setTrigger] = useState('');
 
     async function logOutButton(){
         try {
@@ -28,7 +33,26 @@ export default function Account(){
         console.log("OK")
     }
 
-    function updateUserDbEntry(userID, zipState, thresholdState, frequencyState, timeState){
+
+
+
+    function getCode(){
+            console.log('Getting location code...');
+            const zip = zipCode;
+            const zipurl = `http://dataservice.accuweather.com/locations/v1/postalcodes/search?apikey=${process.env.REACT_APP_FIREBASE_ACCUWEATHER_API}&q=${zip}`
+            axios.get(zipurl).then((response)=>{
+                const newLocationCode = response.data[0].Key;
+                setLocationCode(newLocationCode);
+                console.log("New Code:");
+                console.log(locationCode);
+                console.log(`Should be ${newLocationCode}`);
+                });
+
+    }
+
+
+    function updateUserDbEntry(userID, zipState, locationState, thresholdState, frequencyState, timeState){
+
         const dataGroup = {
         //   zipcode: zipState,
         //   threshold: thresholdState,
@@ -37,6 +61,10 @@ export default function Account(){
         }
         if (zipCode != '' ){
             dataGroup.zipcode = zipState
+            
+        };
+        if (locationCode != '' ){
+            dataGroup.locationcode = locationState
         };
         if (threshold != '' ){
             dataGroup.threshold = thresholdState
@@ -51,26 +79,28 @@ export default function Account(){
         modUserDbEntry(userID, dataGroup);
     }
 
-    function runUpdate() {
-        updateUserDbEntry(user.uid);
-    }
 
     const displayPhoneNumber = `(${user?.phoneNumber?.slice(2,5)}) ${user?.phoneNumber?.slice(5,8)}-${user?.phoneNumber?.slice(8,13)}`;
 
     function handleSubmit(e){
         e.preventDefault();
-        console.log("SUBMITTED")
+        console.log("GO")
+        getCode();
+        console.log(`PLEASE ${locationCode}`)
+        // setLocationCode('BOBBYBOOBY')
         // console.log(zipCode)
+        // console.log(locationCode)
         // console.log(threshold)
         // console.log(frequency)
         // console.log(time)
-        updateUserDbEntry(user.uid, zipCode, threshold, frequency, time)
+        updateUserDbEntry(user.uid, zipCode, locationCode, threshold, frequency, time)
     }
 
     async function getUserData(){
         const userID = user?.uid;
         const docRef = doc(firestore, `users/${userID}`);
-        const userAccountInfo = await getDoc(docRef);
+        // const userAccountInfo = await getDoc(docRef);
+        const userAccountInfo = 'butt';
         if (userAccountInfo.exists()) {
         // console.log("Document data:", userAccountInfo.data());
         setUserInfo(userAccountInfo.data())
@@ -80,8 +110,8 @@ export default function Account(){
         }
     }
 
-    getUserData();
-
+    // getUserData();
+    // useEffect(getUserData(),[])
 
     return (
         <>
@@ -99,7 +129,12 @@ export default function Account(){
             {user && <form>
                 <fieldset className='vertshift'>
                     <label>Zipcode</label>
-                    <input type="number" className="centertext" onChange={(e)=> setZipCode(e.target.value)} placeholder={userInfo?.zipcode}/>
+                    <input type="number" className="centertext" onChange={(e)=> {
+                            setZipCode(e.target.value)
+                            // if (zipCode.length ===5){
+                            //     setTrigger('click')
+                            // }}
+                        }} placeholder={userInfo?.zipcode}/>
                 </fieldset>
                 <fieldset className='vertshift'>
                     <label>Threshold</label>

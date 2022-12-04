@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom"
 import styled from "styled-components";
 
 export default function Header() {
-
     const ButtonGroup = styled.div`
         display: flex;
         justify-content: center;
@@ -12,9 +11,8 @@ export default function Header() {
 
         }
     
+
     `
-
-
     const navigate = useNavigate();
 
     return (
@@ -26,7 +24,6 @@ export default function Header() {
             <button type="button" onClick={()=>{navigate("/special")}}>SPECIAL</button>
             <button type="button" onClick={()=>{navigate("/weather")}}>WEATHER</button>
         </ButtonGroup>
-
 
     )
 
