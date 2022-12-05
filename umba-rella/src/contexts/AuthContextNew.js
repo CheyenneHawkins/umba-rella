@@ -38,7 +38,7 @@ export function AuthContextProvider( {children} ) {
             unsubscribe();
         }
 
-    })
+    },)
 
 
     return (

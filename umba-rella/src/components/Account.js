@@ -1,19 +1,15 @@
 import { UserAuth } from "../contexts/AuthContextNew";
-import { Navigate, useNavigate } from "react-router-dom";
-import { auth, firestore, modUserDbEntry } from "./firebase";
+import { firestore, modUserDbEntry } from "./firebase";
 import { umbrella } from "./SignIn";
 import { Container, FormStyles, Title } from "./Styles";
 import { useEffect, useState } from "react";
-import { collection, doc, getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import axios from 'axios';
-import wait from "waait";
 
 
 export default function Account(){
 
     const { user, logout} = UserAuth();
-
-    const navigate = useNavigate();
 
     const [zipCode, setZipCode] = useState('');
     const [locationCode, setLocationCode] = useState('');
@@ -21,7 +17,8 @@ export default function Account(){
     const [frequency, setFrequency] = useState('');
     const [time, setTime] = useState('');
     const [userInfo, setUserInfo] = useState();
-    const [trigger, setTrigger] = useState('');
+
+    let userInfoTemp;
 
     async function logOutButton(){
         try {
@@ -32,9 +29,6 @@ export default function Account(){
         }
         console.log("OK")
     }
-
-
-
 
     function getCode(){
             console.log('Getting location code...');
@@ -54,25 +48,22 @@ export default function Account(){
     function updateUserDbEntry(userID, zipState, locationState, thresholdState, frequencyState, timeState){
 
         const dataGroup = {
-        //   zipcode: zipState,
-        //   threshold: thresholdState,
-        //   frequency: frequencyState,
-        //   time: timeState        
+      
         }
-        if (zipCode != '' ){
+        if (zipCode !== '' ){
             dataGroup.zipcode = zipState
             
         };
-        if (locationCode != '' ){
+        if (locationCode !== '' ){
             dataGroup.locationcode = locationState
         };
-        if (threshold != '' ){
+        if (threshold !== '' ){
             dataGroup.threshold = thresholdState
         };
-        if (frequency != '')  {
+        if (frequency !== '')  {
             dataGroup.frequency = frequencyState;
         };
-        if (time != '')  {
+        if (time !== '')  {
             dataGroup.time = timeState;
         };
 
@@ -87,30 +78,37 @@ export default function Account(){
         console.log("GO")
         getCode();
         console.log(`PLEASE ${locationCode}`)
-        // setLocationCode('BOBBYBOOBY')
-        // console.log(zipCode)
-        // console.log(locationCode)
-        // console.log(threshold)
-        // console.log(frequency)
-        // console.log(time)
         updateUserDbEntry(user.uid, zipCode, locationCode, threshold, frequency, time)
     }
 
-    async function getUserData(){
-        const userID = user?.uid;
-        const docRef = doc(firestore, `users/${userID}`);
-        // const userAccountInfo = await getDoc(docRef);
-        const userAccountInfo = 'butt';
-        if (userAccountInfo.exists()) {
-        // console.log("Document data:", userAccountInfo.data());
-        setUserInfo(userAccountInfo.data())
-        } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
+    async function getUserData() {
+        if (userInfo === undefined) {
+            const userID = user?.uid;
+            const docRef = doc(firestore, "users", `${userID}`);
+            const docSnap = await getDoc(docRef);
+            // setUserInfo(()=> docSnap?.data())
+            userInfoTemp = docSnap?.data();
+            setUserInfo(userInfoTemp);
+            console.log(docSnap?.data())
+
         }
+
+        // try {
+        //     if (docSnap.exists()) {
+        //     // console.log("Document data:", userAccountInfo.data());
+        //     setUserInfo(docSnap.data())
+        //     } else {
+        //     // doc.data() will be undefined in this case
+        //     console.log("No such document!");
+        //     }
+        // } catch (error) {
+        //     console.log(error)
+        // }
+            
     }
 
-    // getUserData();
+    getUserData();
+
     // useEffect(getUserData(),[])
 
     return (
