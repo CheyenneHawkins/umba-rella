@@ -5,7 +5,7 @@ import { umbrella } from "./SignIn";
 import spinner from "../images/Spinner-1s-200px.gif"
 import { UserAuth } from '../contexts/AuthContextNew';
 import { doc, getDoc } from "firebase/firestore";
-import { firestore } from "./firebase";
+import { createWeatherMessage, firestore } from "./firebase";
 import wait from 'waait';
 
 
@@ -18,14 +18,22 @@ export default function Weather(){
     const [locationCode, setLocationCode] = useState('locationCode');
     const [weather, setWeather ] = useState('');
     const [chanceOfRain, setChanceOfRain] = useState('% rain');
+    const [threshold, setThreshold] = useState(0);
     const [loading, setLoading ] = useState(false);
     const [dbZip, setDbZip ] = useState();
 
 
     let zipzip = '';
+    let tempThresh = '';
 
     const zipUrlStart = `http://dataservice.accuweather.com/locations/v1/postalcodes/search?apikey=${process.env.REACT_APP_FIREBASE_ACCUWEATHER_API}&q=`
 
+    //----when chanceofRain state is updated, checks threshold, sends text
+    useEffect(()=>{
+        if (chanceOfRain !== '% rain' && threshold >= 30){
+            sendWeatherMessage(user.phoneNumber,chanceOfRain)
+        }
+    }, [chanceOfRain])
 
     async function fullInfoGet() {
 
@@ -37,14 +45,20 @@ export default function Weather(){
                 const docData = docSnap.data();
                 console.log(docData?.zipcode);
                 zipzip = docData?.zipcode;
+                tempThresh = docData?.threshold;
+                console.log(tempThresh)
                 setDbZip(zipzip);
+                setThreshold(tempThresh);
 
             //----- runs weather call with zicode retrieved from Firebase
-                accuWeatherApiCall(docData.zipcode)
-        } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
-        }
+                await accuWeatherApiCall(docData.zipcode).then(
+                    // sendWeatherMessage(user.phoneNumber,chanceOfRain)
+                    console.log("stuff")
+                )
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+            }
 
     }
 
@@ -59,7 +73,6 @@ export default function Weather(){
         //----------returns city name and location code
             setCity(newCity)
             setLocationCode(newLocationCode)
-            console.log(newCity)
             async function runWeather (){
                 await wait(300)
                 console.log(`New Code: ${newLocationCode}`);
@@ -69,22 +82,29 @@ export default function Weather(){
                         setLoading(false)
                         console.log(`New Code: ${newLocationCode}`);
         //-----------saves complete weather object in state
+                        const tempChance = response.data.DailyForecasts[0]?.Day.RainProbability;
                         setWeather(response.data)
-                        setChanceOfRain(response.data.DailyForecasts[0]?.Day.RainProbability)
-                        console.log(`WEATHER -- ${response.data}`)
+                        setChanceOfRain(tempChance)
+                        console.log(`END OF WEATHER GET`)
+                        // console.log(`WEATHER -- ${response.data}`)
                     });
                 };
                 runWeather();
-
             });
         }
 
         function testValue() {
-            console.log(weather)
+            console.log(parseInt(chanceOfRain))
     
     }
 
-    // fullInfoGet();
+        function sendWeatherMessage(userPhone, rainChance) {
+            console.log('SEND MESSAGE')
+            console.log(city)
+        const dataGroup = {to: userPhone, from: '+15139607429', body: `Bring another umbrella ${city}, there's a ${rainChance}% chance of rain today` }
+        const messageID = `${userPhone}${Math.floor(Math.random() * 1001)}`
+        createWeatherMessage(messageID, dataGroup)
+    }
 
     return (
         <>
@@ -98,15 +118,10 @@ export default function Weather(){
                 <h2>WEATHER</h2>
                 {/* <button onClick={getCoordinates}>GET COORDINATES</button> */}
                 <div>
-                    <button onClick={()=>{
-                    if (zip.length === 5){
-                        accuWeatherApiCall();    
-                    } else {
-                        alert('NO')
-                    }
-                    }}>GET THE WEATHER</button>
-                    <button onClick={testValue}>FULL WEATHER OBJECT</button>
-                    <button onClick={fullInfoGet}>USER DB INFO</button>
+                    {/* <button onClick={()=>{sendWeatherMessage()}}>TEST MESSAGE SEND</button> */}
+                    {/* <button onClick={testValue}>FULL WEATHER OBJECT</button> */}
+                    <button onClick={fullInfoGet}>RUN IT</button>
+                    <button onClick={testValue}>CONSOLE LOG</button>
                 </div>
                
                 <br/>

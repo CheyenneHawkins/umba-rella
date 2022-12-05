@@ -23,7 +23,6 @@ export default function Account(){
     async function logOutButton(){
         try {
             await logout()
-            // navigate("/signupphone")
         } catch (e) {
             console.log(e.message)
         }
@@ -75,9 +74,7 @@ export default function Account(){
 
     function handleSubmit(e){
         e.preventDefault();
-        console.log("GO")
         getCode();
-        console.log(`PLEASE ${locationCode}`)
         updateUserDbEntry(user.uid, zipCode, locationCode, threshold, frequency, time)
     }
 
@@ -86,24 +83,12 @@ export default function Account(){
             const userID = user?.uid;
             const docRef = doc(firestore, "users", `${userID}`);
             const docSnap = await getDoc(docRef);
-            // setUserInfo(()=> docSnap?.data())
             userInfoTemp = docSnap?.data();
             setUserInfo(userInfoTemp);
-            console.log(docSnap?.data())
+            // console.log(docSnap?.data())
 
         }
 
-        // try {
-        //     if (docSnap.exists()) {
-        //     // console.log("Document data:", userAccountInfo.data());
-        //     setUserInfo(docSnap.data())
-        //     } else {
-        //     // doc.data() will be undefined in this case
-        //     console.log("No such document!");
-        //     }
-        // } catch (error) {
-        //     console.log(error)
-        // }
             
     }
 
@@ -129,9 +114,6 @@ export default function Account(){
                     <label>Zipcode</label>
                     <input type="number" className="centertext" onChange={(e)=> {
                             setZipCode(e.target.value)
-                            // if (zipCode.length ===5){
-                            //     setTrigger('click')
-                            // }}
                         }} placeholder={userInfo?.zipcode}/>
                 </fieldset>
                 <fieldset className='vertshift'>

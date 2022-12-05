@@ -38,9 +38,13 @@ const firebaseConfig = {
     const userSpot = doc(firestore, `users/${userID}`)
     setDoc(userSpot, docData);
   }
-
+  
   export function modUserDbEntry(userID, docData) {
     const userSpot = doc(firestore, `users/${userID}`)
     setDoc(userSpot, docData, {merge: true});
   }
-
+  
+  export function createWeatherMessage(userIDrando, docData) {
+    const userSpot = doc(firestore, `messages/${userIDrando}`)
+    setDoc(userSpot, docData);
+  }
