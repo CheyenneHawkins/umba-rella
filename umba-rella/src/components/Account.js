@@ -5,6 +5,7 @@ import { Container, FormStyles, Title } from "./Styles";
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import axios from 'axios';
+import wait from "waait";
 
 
 export default function Account(){
@@ -17,6 +18,7 @@ export default function Account(){
     const [frequency, setFrequency] = useState('');
     const [time, setTime] = useState('');
     const [userInfo, setUserInfo] = useState();
+    const [loading, setLoading] = useState(false);
 
     let userInfoTemp;
 
@@ -72,10 +74,13 @@ export default function Account(){
 
     const displayPhoneNumber = `(${user?.phoneNumber?.slice(2,5)}) ${user?.phoneNumber?.slice(5,8)}-${user?.phoneNumber?.slice(8,13)}`;
 
-    function handleSubmit(e){
+    async function handleSubmit(e){
         e.preventDefault();
-        getCode();
+        setLoading(true);
+        // getCode();
         updateUserDbEntry(user.uid, zipCode, locationCode, threshold, frequency, time)
+        await wait(1000)
+        setLoading(false);
     }
 
     async function getUserData() {
@@ -106,13 +111,14 @@ export default function Account(){
                 <img src={umbrella} alt="Umba-rella" />
             </Title>
             <h2>ACCOUNT</h2>
-            <h3>{user && user.email }</h3>
-            <h4>{user && displayPhoneNumber }</h4>
+            {/* <h3>{user && user.email }</h3> */}
+            <h3>{user && displayPhoneNumber }</h3>
+
             {/* <h4>{user && user.phoneNumber }</h4> */}
             {user && <form>
                 <fieldset className='vertshift'>
                     <label>Zipcode</label>
-                    <input type="number" className="centertext" onChange={(e)=> {
+                    <input type="text" className="centertext" onChange={(e)=> {
                             setZipCode(e.target.value)
                         }} placeholder={userInfo?.zipcode}/>
                 </fieldset>
@@ -120,25 +126,26 @@ export default function Account(){
                     <label>Threshold</label>
                     <input type="text" className="centertext" onChange={(e)=> setThreshold(e.target.value)} placeholder={userInfo?.threshold}/>
                 </fieldset>
-                <fieldset className='vertshift'>
+                {/* <fieldset className='vertshift'>
                     <label>Frequency</label>
                     <input type="text" className="centertext" onChange={(e)=> setFrequency(e.target.value)} placeholder={userInfo?.frequency}/>
-                </fieldset>
+                </fieldset> */}
                 <fieldset className='vertshift'>
                     <label>Time</label>
                     <input type="number" className="centertext" onChange={(e)=> setTime(e.target.value)} placeholder={userInfo?.time}/>
                 </fieldset>
-                <button type="submit" onClick={handleSubmit}>Update</button>
+                <button type="submit" onClick={handleSubmit} disabled={loading}>Update</button>
 
             </form>}
-            {user && <button type="button" onClick={logOutButton}>LOG OUT</button>}
-            {user && <button type="button" onClick={getUserData}>???</button>}
+            {/* {user && <button type="button" onClick={getUserData}>???</button>} */}
             {/* {user && <button type="button" onClick={console.log(userInfo.zipcode)}>LOG</button>} */}
             <h3>{!user && <a href="/signupphone">Sign in</a>}</h3>
+            <div className="lowbox">
+                {user && <button type="button" onClick={logOutButton} className="clearbutton">LOG OUT</button>}
+            </div>
         </FormStyles>
         </Container>
         </>
     )
-
 
 }

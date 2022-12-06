@@ -11,10 +11,11 @@ import wait from 'waait';
 
 export default function Weather(){
 
-    const { user } = UserAuth();
+    const { user, logout } = UserAuth();
     
     const [city, setCity ] = useState('City');
-    const [zip, setZip] = useState('zipcode');
+    const [cityConfirm, setCityConfirm ] = useState('');
+    const [zip, setZip] = useState('');
     const [locationCode, setLocationCode] = useState('locationCode');
     const [weather, setWeather ] = useState('');
     const [chanceOfRain, setChanceOfRain] = useState('% rain');
@@ -26,7 +27,16 @@ export default function Weather(){
     let zipzip = '';
     let tempThresh = '';
 
-    const zipUrlStart = `http://dataservice.accuweather.com/locations/v1/postalcodes/search?apikey=${process.env.REACT_APP_FIREBASE_ACCUWEATHER_API}&q=`
+    async function logOutButton(){
+        try {
+            await logout()
+        } catch (e) {
+            console.log(e.message)
+        }
+        console.log("OK")
+    }
+
+    const zipUrlStart = `https://dataservice.accuweather.com/locations/v1/postalcodes/search?apikey=${process.env.REACT_APP_FIREBASE_ACCUWEATHER_API}&q=`
 
     //----when chanceofRain state is updated, checks threshold, sends text
     useEffect(()=>{
@@ -34,6 +44,14 @@ export default function Weather(){
             sendWeatherMessage(user.phoneNumber,chanceOfRain)
         }
     }, [chanceOfRain])
+
+    // useEffect(()=>{
+    //     if (city !== cityConfirm){
+    //         fullInfoGet();
+    //         const cityCopy = city
+    //         setCityConfirm(cityCopy);
+    //     }
+    // }, [])
 
     async function fullInfoGet() {
 
@@ -63,7 +81,6 @@ export default function Weather(){
     }
 
     async function accuWeatherApiCall (zippy){
-        // e.preventDefault();
         console.log('CODE -- getLocationCode Start')
         setLoading(true)
         //----------zipcode search for location code
@@ -73,11 +90,12 @@ export default function Weather(){
         //----------returns city name and location code
             setCity(newCity)
             setLocationCode(newLocationCode)
+            //-------define weather api function
             async function runWeather (){
                 await wait(300)
                 console.log(`New Code: ${newLocationCode}`);
         //----------uses location code to make weather api call
-                axios.get(`http://dataservice.accuweather.com/forecasts/v1/daily/1day/${newLocationCode}?apikey=${process.env.REACT_APP_FIREBASE_ACCUWEATHER_API}&details=true`).then(
+                axios.get(`https://dataservice.accuweather.com/forecasts/v1/daily/1day/${newLocationCode}?apikey=${process.env.REACT_APP_FIREBASE_ACCUWEATHER_API}&details=true`).then(
                     (response)=>{
                         setLoading(false)
                         console.log(`New Code: ${newLocationCode}`);
@@ -86,17 +104,12 @@ export default function Weather(){
                         setWeather(response.data)
                         setChanceOfRain(tempChance)
                         console.log(`END OF WEATHER GET`)
-                        // console.log(`WEATHER -- ${response.data}`)
                     });
                 };
+        //----------run weather api function
                 runWeather();
             });
         }
-
-        function testValue() {
-            console.log(parseInt(chanceOfRain))
-    
-    }
 
         function sendWeatherMessage(userPhone, rainChance) {
             console.log('SEND MESSAGE')
@@ -115,26 +128,41 @@ export default function Weather(){
                 <h1>Umba-Rella</h1>
                 <img src={umbrella} alt="Umba-rella" />
             </Title>
-                <h2>WEATHER</h2>
-                {/* <button onClick={getCoordinates}>GET COORDINATES</button> */}
-                <div>
-                    {/* <button onClick={()=>{sendWeatherMessage()}}>TEST MESSAGE SEND</button> */}
-                    {/* <button onClick={testValue}>FULL WEATHER OBJECT</button> */}
-                    <button onClick={fullInfoGet}>RUN IT</button>
-                    <button onClick={testValue}>CONSOLE LOG</button>
-                </div>
-               
+                {/* <h2>WEATHER</h2> */}
+
                 <br/>
-                <h2>{city && city}</h2>
-                <h3>Chance of Rain</h3>
+                <h2 className='compact'>{city && city}</h2>
+                {/* <h3>Chance of Rain</h3> */}
+                <div className='raindiv'>
+                    <h3 className='big'>{weather && `${chanceOfRain}%`}</h3>
+                    <h2 className='dark'>{weather && `CHANCE OF RAIN`}</h2>
+                </div>
                 <p>{loading && 
                 <img src={spinner} alt='loading' height={90}/>
                 }</p>
-                <h3>{weather && `${chanceOfRain}%`}</h3>
-                {/* <form>
-                    <input type="number" onChange={(e)=> setZip(e.target.value)}/>
-                </form> */}
+                <div className="message">
+                    {chanceOfRain >= 30 && 
+                    <>
+                    <h1 className='stacked'>BRING</h1>
+                    <h1 className='stacked'>AN</h1>
+                    <h1 className='stacked'>UMBRELLA</h1>
+                    </>
+                    }
+                    {chanceOfRain < 30 && 
+                    <>
+                    <h1 className='stacked'>NO</h1>
+                    <h1 className='stacked'>UMBRELLA</h1>
+                    <h1 className='stacked'>NEEDED</h1>
+                    </>
+                    }
+                </div>
+                <div className="lowbox">
+                    {user && <button type="button" onClick={logOutButton} className="clearbutton">LOG OUT</button>}
+                </div>
             </FormStyles>
+            <div>
+                <button onClick={fullInfoGet}>RUN IT</button>
+            </div>
         </Container>
 
         </>

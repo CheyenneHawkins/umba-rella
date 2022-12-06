@@ -34,6 +34,7 @@ const FormStyles = styled.div`
     border: none;
     border-radius: 15px;
     box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    /* justify-content: center; */
     & h1 {
         font-size: 3rem;
         transform: skewY(-5deg);
@@ -93,6 +94,10 @@ const FormStyles = styled.div`
     & button {
         padding: 5px;
         margin: 8px;
+    }
+
+    & div {
+
     }
  `
 

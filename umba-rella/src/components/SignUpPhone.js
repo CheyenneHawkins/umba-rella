@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import styled from "styled-components";
 import umbrella from "../images/Umbrella3.png"
 import { UserAuth } from "../contexts/AuthContextNew";
 import { useNavigate } from "react-router-dom";
@@ -124,7 +123,9 @@ export default function SignUpPhone(){
                 <form>
                     <fieldset className={phoneField}>
                         <label>Phone Number</label>
-                        <input type="number" ref={phoneRef} onChange={(e)=> setPhone(e.target.value)}/>
+                        <input type="number" ref={phoneRef} onChange={(e)=> {
+                            setPhone(e.target.value)}
+                            } className="centertext"/>
                         <button type="submit" onClick={handleSubmit} disabled={otpSubmitButton}>Send Code</button>
                     </fieldset>
                     <fieldset className={otpField}>
@@ -142,12 +143,6 @@ export default function SignUpPhone(){
                         setotpField("otpshow")
                         setOtpSubmitButton(false)
                     }}>SHOW ALL FIELDS</button>
-                </div>
-                <div className="" >
-                    <button type="button" onClick={()=> {
-                        // testDB();
-                        console.log("Did it work?");
-                    }}>DB TEST</button>
                 </div>
             </FormStyles>
         </Container>

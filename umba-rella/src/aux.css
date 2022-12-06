@@ -33,3 +33,70 @@
 .centertext {
     text-align: center !important;
 }
+
+.gradient {
+    /* color: linear-gradient(11deg, rgba(179,143,219,1) 0%, rgba(138,168,204,1) 100%) !important; */
+    color: rgb(132, 104, 164) !important;
+}
+
+.dark {
+    color: rgb(132, 104, 164) !important;
+}
+
+.clearbutton {
+    /* margin-top: -200px !important; */
+    background: none;
+    border: none;
+    color: #FAFEFF;
+    cursor: pointer;
+    /* margin-top: 60px !important; */
+}
+
+.compact {
+    margin-bottom: -80px !important;
+}
+
+.lowbox {
+    /* height: 100%; */
+    align-self: flex-end;
+    /* border: red solid 1px; */
+}
+
+.message {
+    margin-top: -70px;
+    overflow: hidden;
+    /* border: red solid 1px; */
+    height: 170px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    color: rgb(225, 199, 255) !important;
+    /* justify-content: center;
+    align-content: center;
+    align-self: center; */
+}
+
+.big {
+    font-size: 4rem !important;
+}
+
+.huge {
+    font-size: 4rem !important;
+}
+
+.raindiv {
+    margin-top: -50px !important;
+    display: grid;
+    grid-template-rows: 170px 100px;
+}
+
+.shadow {
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
+.stacked {
+    transform: skewY(0deg) !important;
+    margin: -10px 0px -10px 0px !important;
+
+    /* padding: 20px !important; */
+}
