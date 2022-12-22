@@ -26,14 +26,16 @@ export default function SignUpPhone(){
     const [otpField, setotpField] = useState('hide');
     const [otpSubmitButton, setOtpSubmitButton] = useState(false)
     const [phoneField, setPhoneField] = useState('show');
+    const [buttonDisable, setButtonDisable] = useState(true);
 
     const { createUserPhone } = UserAuth();
 
     const generateRecaptcha = ()=> {
-        window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+        // window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {}, auth);
+
+            window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
             'size': 'invisible',
             'callback': (response) => {
-              // reCAPTCHA solved, allow signInWithPhoneNumber.
             }
           }, auth);
     }
@@ -41,32 +43,37 @@ export default function SignUpPhone(){
     //---------this runs on new sign up or sign in
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
-        console.log("Submit Clicked");
+        if (phone.length === 10) {
+            setError('');
+            console.log("Submit Clicked");
+    
+            //recaptcha process
+            generateRecaptcha();
+            let appVerifier = window.recaptchaVerifier;
+    
+            //stores the formatted phone number in state
+            //to send to db entry
+            setPhoneFormatted(`+1 ${phone}`);
+    
+            //state version of formatted number isn't working for
+            //the authentication, so this stores a temporary version to pass
+            let phoneFormattedTemp = `+1 ${phone}`;
+    
+            //ui increment
+            setotpField('otpshow')
+            setPhoneField('hide')
+            setOtpSubmitButton(true)
+            
+            //Sends info to create user
+            createUserPhone(phoneFormattedTemp, appVerifier).then(confirmationResult => {
+                window.confirmationResult = confirmationResult;
+            }).catch ((error) => {
+                    console.log(error)
+                })
+        } else {
+            alert('Please enter 10 digit phone number')
 
-        //recaptcha process
-        generateRecaptcha();
-        let appVerifier = window.recaptchaVerifier;
-
-        //stores the formatted phone number in state
-        //to send to db entry
-        setPhoneFormatted(`+1 ${phone}`);
-
-        //state version of formatted number isn't working for
-        //the authentication, so this stores a temporary version to pass
-        let phoneFormattedTemp = `+1 ${phone}`;
-
-        //ui increment
-        setotpField('otpshow')
-        setPhoneField('hide')
-        setOtpSubmitButton(true)
-        
-        //Sends info to create user
-        createUserPhone(phoneFormattedTemp, appVerifier).then(confirmationResult => {
-            window.confirmationResult = confirmationResult;
-        }).catch ((error) => {
-                console.log(error)
-            })
+        }
         }
 
     //---------this runs on entering the one time code
@@ -126,7 +133,7 @@ export default function SignUpPhone(){
                         <input type="number" ref={phoneRef} onChange={(e)=> {
                             setPhone(e.target.value)}
                             } className="centertext"/>
-                        <button type="submit" onClick={handleSubmit} disabled={otpSubmitButton}>Send Code</button>
+                        <button type="submit" onClick={handleSubmit}>Send Code</button>
                     </fieldset>
                     <fieldset className={otpField}>
                         <label>Enter Code</label>
@@ -135,15 +142,17 @@ export default function SignUpPhone(){
                     </fieldset>
                 </form>
                 <div id="recaptcha-container">
-
                 </div>
-                <div className="bottomfeeder" >
+                <div className="big-umbrella">
+                    <img src={umbrella} alt="" />
+                </div>
+                {/* <div className="bottomfeeder" >
                     <button type="button" onClick={()=> {
                         setPhoneField("show")
                         setotpField("otpshow")
                         setOtpSubmitButton(false)
                     }}>SHOW ALL FIELDS</button>
-                </div>
+                </div> */}
             </FormStyles>
         </Container>
         </>

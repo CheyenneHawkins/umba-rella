@@ -3,14 +3,21 @@ import { firestore, modUserDbEntry } from "./firebase";
 import { umbrella } from "./SignIn";
 import { Container, FormStyles, Title } from "./Styles";
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query } from "firebase/firestore";
 import axios from 'axios';
 import wait from "waait";
+import { useNavigate } from "react-router-dom";
+import { getAuth } from "firebase/auth";
+
 
 
 export default function Account(){
 
+
     const { user, logout} = UserAuth();
+
+    const navigate = useNavigate();
+
 
     const [zipCode, setZipCode] = useState('');
     const [locationCode, setLocationCode] = useState('');
@@ -73,6 +80,7 @@ export default function Account(){
 
 
     const displayPhoneNumber = `(${user?.phoneNumber?.slice(2,5)}) ${user?.phoneNumber?.slice(5,8)}-${user?.phoneNumber?.slice(8,13)}`;
+    const currentZip = `(${user?.zipCode}`;
 
     async function handleSubmit(e){
         e.preventDefault();
@@ -81,25 +89,22 @@ export default function Account(){
         updateUserDbEntry(user.uid, zipCode, locationCode, threshold, frequency, time)
         await wait(1000)
         setLoading(false);
+        navigate("/weather")
     }
 
     async function getUserData() {
-        if (userInfo === undefined) {
-            const userID = user?.uid;
-            const docRef = doc(firestore, "users", `${userID}`);
-            const docSnap = await getDoc(docRef);
-            userInfoTemp = docSnap?.data();
-            setUserInfo(userInfoTemp);
-            // console.log(docSnap?.data())
-
+        const q = query(collection(firestore, "users"));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+        const formattedPhone = doc.data().phoneNumber.slice(3,13) 
+        console.log("----------");
+        console.log(formattedPhone);
+        console.log(doc.data().zipcode);
         }
-
-            
+        );
+        // console.log(querySnapshot);
     }
 
-    getUserData();
-
-    // useEffect(getUserData(),[])
 
     return (
         <>
@@ -122,18 +127,18 @@ export default function Account(){
                             setZipCode(e.target.value)
                         }} placeholder={userInfo?.zipcode}/>
                 </fieldset>
-                <fieldset className='vertshift'>
+                {/* <fieldset className='vertshift'>
                     <label>Threshold</label>
                     <input type="text" className="centertext" onChange={(e)=> setThreshold(e.target.value)} placeholder={userInfo?.threshold}/>
-                </fieldset>
+                </fieldset> */}
                 {/* <fieldset className='vertshift'>
                     <label>Frequency</label>
                     <input type="text" className="centertext" onChange={(e)=> setFrequency(e.target.value)} placeholder={userInfo?.frequency}/>
                 </fieldset> */}
-                <fieldset className='vertshift'>
+                {/* <fieldset className='vertshift'>
                     <label>Time</label>
                     <input type="number" className="centertext" onChange={(e)=> setTime(e.target.value)} placeholder={userInfo?.time}/>
-                </fieldset>
+                </fieldset> */}
                 <button type="submit" onClick={handleSubmit} disabled={loading}>Update</button>
 
             </form>}
@@ -144,8 +149,10 @@ export default function Account(){
                 {user && <button type="button" onClick={logOutButton} className="clearbutton">LOG OUT</button>}
             </div>
         </FormStyles>
+                <button type="button" onClick={getUserData}>USERS?</button>
         </Container>
         </>
     )
 
 }
+

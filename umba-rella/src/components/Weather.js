@@ -4,15 +4,18 @@ import { Container, FormStyles, Title } from "./Styles";
 import { umbrella } from "./SignIn";
 import spinner from "../images/Spinner-1s-200px.gif"
 import { UserAuth } from '../contexts/AuthContextNew';
+import {auth} from "../components/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { createWeatherMessage, firestore } from "./firebase";
 import wait from 'waait';
+import { getAuth } from 'firebase/auth';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 
 export default function Weather(){
 
     const { user, logout } = UserAuth();
-    
+    const navigate = useNavigate;
     const [city, setCity ] = useState('City');
     const [cityConfirm, setCityConfirm ] = useState('');
     const [zip, setZip] = useState('');
@@ -22,6 +25,7 @@ export default function Weather(){
     const [threshold, setThreshold] = useState(0);
     const [loading, setLoading ] = useState(false);
     const [dbZip, setDbZip ] = useState();
+    const [pageSignal, setPageSignal] = useState('');
 
 
     let zipzip = '';
@@ -33,17 +37,18 @@ export default function Weather(){
         } catch (e) {
             console.log(e.message)
         }
+        navigate('/signupphone')
         console.log("OK")
     }
 
     const zipUrlStart = `https://dataservice.accuweather.com/locations/v1/postalcodes/search?apikey=${process.env.REACT_APP_FIREBASE_ACCUWEATHER_API}&q=`
 
     //----when chanceofRain state is updated, checks threshold, sends text
-    useEffect(()=>{
-        if (chanceOfRain !== '% rain' && threshold >= 30){
-            sendWeatherMessage(user.phoneNumber,chanceOfRain)
-        }
-    }, [chanceOfRain])
+    // useEffect(()=>{
+    //     if (chanceOfRain !== '% rain' && threshold >= 30){
+    //         sendWeatherMessage(user.phoneNumber,chanceOfRain)
+    //     }
+    // }, [chanceOfRain])
 
     // useEffect(()=>{
     //     if (city !== cityConfirm){
@@ -52,6 +57,12 @@ export default function Weather(){
     //         setCityConfirm(cityCopy);
     //     }
     // }, [])
+
+
+    //runs the weather cycle on pageload
+    useEffect(()=>{
+            fullInfoGet();
+    }, [pageSignal])
 
     async function fullInfoGet() {
 
@@ -67,12 +78,15 @@ export default function Weather(){
                 console.log(tempThresh)
                 setDbZip(zipzip);
                 setThreshold(tempThresh);
-
+                try {
             //----- runs weather call with zicode retrieved from Firebase
                 await accuWeatherApiCall(docData.zipcode).then(
-                    // sendWeatherMessage(user.phoneNumber,chanceOfRain)
-                    console.log("stuff")
-                )
+                    console.log("accuWeather call done")
+                )                    
+                } catch (e) {
+                    console.log(e.message)
+                }
+
             } else {
                 // doc.data() will be undefined in this case
                 console.log("No such document!");
@@ -115,9 +129,11 @@ export default function Weather(){
             console.log('SEND MESSAGE')
             console.log(city)
         const dataGroup = {to: userPhone, from: '+15139607429', body: `Bring another umbrella ${city}, there's a ${rainChance}% chance of rain today` }
-        const messageID = `${userPhone}${Math.floor(Math.random() * 1001)}`
+        const messageID = `${userPhone}-${Math.floor(Math.random() * 1001)}`
         createWeatherMessage(messageID, dataGroup)
     }
+
+
 
     return (
         <>
@@ -156,12 +172,50 @@ export default function Weather(){
                     </>
                     }
                 </div>
+                {(user && chanceOfRain < 30) &&
+                <div className='comfort'>
+                    <p>
+                    Don't worry, 
+                    </p>
+                    <p>
+                    we'll  
+                    <span>
+                    &nbsp;text you&nbsp; 
+                    </span>
+                    when 
+                    </p>
+                    <p>
+                    it looks like rain.
+                    </p>
+                </div>}
+                {(user && chanceOfRain >= 30) &&
+                <div className='comfort'>
+                <p>
+                    And remember, 
+                    </p>
+                    <p>
+                    we'll  
+                    <span>
+                    &nbsp;text you&nbsp; 
+                    </span>
+                    anytime 
+                    </p>
+                    <p>
+                    it looks like rain.
+                    </p>
+                </div>
+                }
                 <div className="lowbox">
+                    {user && <button type="button" onClick={(e)=>{
+                        e.preventDefault();
+                        console.log('WORKS');
+                        navigate('/account');
+                        }} className="clearbutton">ACCOUNT</button>}
                     {user && <button type="button" onClick={logOutButton} className="clearbutton">LOG OUT</button>}
                 </div>
             </FormStyles>
             <div>
-                <button onClick={fullInfoGet}>RUN IT</button>
+                {/* <button onClick={fullInfoGet}>RUN IT</button> */}
             </div>
         </Container>
 

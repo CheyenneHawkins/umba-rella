@@ -18,12 +18,29 @@ body, html {
   background: linear-gradient(11deg, rgba(231,214,210,1) 0%, rgba(186,196,200,1) 100%);
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
+}
+
+body {
+  position: relative;
 }
 
 .App {
   margin: 0;
   padding: 0;
   text-align: center;
+}
+
+.white-skew-box {
+  /* background: #FAFEFF; */
+  position: absolute;
+  width: 100vw;
+  height: 280px;
+  top: 140px;
+  z-index: -1;
+  /* transform: skewY(-5deg); */
+  overflow: hidden;
+
 }
 
 

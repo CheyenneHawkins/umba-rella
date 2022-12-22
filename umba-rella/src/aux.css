@@ -58,7 +58,10 @@
 
 .lowbox {
     /* height: 100%; */
+    margin-top: 20px;
     align-self: flex-end;
+    display: flex;
+    justify-content: center;
     /* border: red solid 1px; */
 }
 
@@ -74,6 +77,22 @@
     /* justify-content: center;
     align-content: center;
     align-self: center; */
+}
+
+.comfort {
+    font-size: 1.5rem;
+    padding: 15%;
+    margin-top: -20px;
+}
+
+.comfort p{
+    font-size: 1.5rem;
+    /* padding: 15%; */
+    margin: 0px;
+}
+
+.comfort span{
+    color: var(--dark);
 }
 
 .big {

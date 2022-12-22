@@ -22,6 +22,12 @@ const Container = styled.div`
     `
 
 const FormStyles = styled.div`
+    @media (max-width: 650px) {
+        width: 100vw;
+        height: 100vh;
+        margin: 0px;
+        border-radius: 0px;
+    }
     font-family: soleil,sans-serif;
     font-weight: 400;
     font-style: normal;
@@ -34,6 +40,8 @@ const FormStyles = styled.div`
     border: none;
     border-radius: 15px;
     box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    overflow-x: hidden;
+
     /* justify-content: center; */
     & h1 {
         font-size: 3rem;
@@ -59,10 +67,12 @@ const FormStyles = styled.div`
             width: 200px;
             overflow: hidden;
             :focus {
-                outline: var(--dark) solid 1px;
+                /* outline: var(--dark) solid 1px; */
+                outline: none;
             }
         }
         & button {
+            color: var(--dark);
             background: var(--white);
             border-radius: 20px;
             box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
@@ -115,4 +125,42 @@ const FormStyles = styled.div`
         }
     `
 
-export { Container, FormStyles, Title }
+    const Welcome = styled.div`
+        padding: 30px 20%;
+        /* transform: skewY(-5deg); */
+        display: grid;
+        justify-content: center;
+        overflow-x: hidden;
+
+        & h2 {
+            color: var(--dark);
+        }
+        & span {
+            color: var(--white);
+            font-size: 1.5rem;
+        }
+        & button {
+            color: var(--white);
+            background: var(--dark);
+            border-radius: 20px;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+            width: 100px;
+            border: none;
+            padding: 10px;
+            margin-top: 40px;
+            /* width: 100px; */
+            font-weight: 700;
+            justify-self: center;
+            transition: all .3s;
+            cursor: pointer;
+            :hover {
+
+            };
+            :active {
+                transform: scale(.98);
+            };
+        }
+    
+    `
+
+export { Container, FormStyles, Title, Welcome }

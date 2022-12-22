@@ -10,19 +10,19 @@ export default function Header() {
             margin: 0px 20px;
 
         }
-    
+        @media (max-width: 650px) {
+            display: none;
+        }
 
     `
     const navigate = useNavigate();
 
     return (
         <ButtonGroup>
-            {/* <button type="button" onClick={()=>{navigate("/signup")}}>SIGN UP PAGE</button> */}
-            <button type="button" onClick={()=>{navigate("/signupphone")}}>SIGN UP PHONE PAGE</button>
-            {/* <button type="button" onClick={()=>{navigate("/signin")}}>SIGN IN PAGE</button> */}
+            {/* <button type="button" onClick={()=>{navigate("/signupphone")}}>SIGN UP PHONE PAGE</button>
             <button type="button" onClick={()=>{navigate("/account")}}>ACCOUNT</button>
-            <button type="button" onClick={()=>{navigate("/special")}}>SPECIAL</button>
-            <button type="button" onClick={()=>{navigate("/weather")}}>WEATHER</button>
+            <button type="button" onClick={()=>{navigate("/info")}}>INFO</button>
+            <button type="button" onClick={()=>{navigate("/weather")}}>WEATHER</button> */}
         </ButtonGroup>
 
     )
